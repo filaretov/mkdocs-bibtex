@@ -45,7 +45,7 @@ def test_bad_pandoc_registry(bib_file):
 
 def test_pandoc_registry_initialization(registry, csl):
     """Test basic initialization and loading of bib files"""
-    assert len(registry.bib_data.entries) == 4
+    assert len(registry.bib_data.entries) == 5
     assert registry.csl_file is csl
 
 

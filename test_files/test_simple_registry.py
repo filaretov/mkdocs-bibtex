@@ -15,7 +15,7 @@ def simple_registry():
 
 def test_simple_registry_initialization(simple_registry):
     """Test basic initialization and loading of bib files"""
-    assert len(simple_registry.bib_data.entries) == 4
+    assert len(simple_registry.bib_data.entries) == 5
 
 
 def test_validate_citation_blocks_valid(simple_registry):
@@ -95,6 +95,13 @@ def test_reference_text(simple_registry):
     # Test citation with URL
     citation = Citation("test_citavi", "", "")
     expected = "First Author and Second Author. Test Title (TT). *Testing Journal (TJ)*, 2019. URL: [\\\\url\\{https://doi.org/10.21577/0103\\-5053.20190253\\}](\\url{https://doi.org/10.21577/0103-5053.20190253})."
+    assert simple_registry.reference_text(citation) == expected
+
+    # Test citation with a lot of punctuation
+    citation = Citation("__0:1.2:3$4&5-a+b?c/d", "", "")
+    expected = (
+        "Dash Ampersand and Not The Guitarist Slash. All You Need is Punctuation (PC). *Journal of Punctuation*, 2025."
+    )
     assert simple_registry.reference_text(citation) == expected
 
     # Test inline reference

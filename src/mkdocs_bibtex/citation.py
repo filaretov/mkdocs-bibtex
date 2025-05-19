@@ -1,11 +1,40 @@
 from dataclasses import dataclass
 import re
 
+# Here's how the correct syntax for valid citation keys was derived:
+# 1. According to these StackExchange posts:
+# https://tex.stackexchange.com/questions/408530/what-characters-are-allowed-to-use-as-delimiters-for-bibtex-keys
+# https://tex.stackexchange.com/questions/96454/using-bibtex-keys-containing-parentheses-with-biber/96918#96918
+# the following punctuation symbols are DISALLOWED:
+# "#'(),={}%~\
 
-CITATION_REGEX = re.compile(r"(?:(?P<prefix>[^@;]*?)\s*)?@(?P<key>[\w-]+)(?:,\s*(?P<suffix>[^;]+))?")
+# 2. Pandoc specifies the following rules:
+# https://pandoc.org/MANUAL.html#citation-syntax
+# Which imply that punctuation except for underscore can not be repeated in
+# keys.
+# It also defines the following set of ALLOWED punctuation characters:
+# :.#$%&-+?<>~/
+# However, experimentatin with pandoc suggests that the following characters
+# are always DISALLOWED:
+# #%<>~ ^!|
+# Admittedly, the final three were not on the original list of allowed characters.
+#
+# Finally, pandoc also requires that the key start with an alphanumeric symbol or underscore,
+# and that the allowed punctuation characters do NOT appear as the first or final symbol in a key,
+# and that the allowed punctuation characters only appear in groups of one.
+# This leads to the following regex for citation keys which should be accepted by all
+# systems used by mkdocs-bibtex:
+# r"@(?P<key>[\w0-9_]([:.$&+?/-]?[\w0-9_]+)*)"
+
+
+CITATION_REGEX = re.compile(
+    r"(?:(?P<prefix>[^@;]*?)\s*)?"
+    r"@(?P<key>[\w0-9_]([:.$&+?/-]?[\w0-9_]+)*)"
+    r"(?:,\s*(?P<suffix>[^;]+))?"
+)
 CITATION_BLOCK_REGEX = re.compile(r"\[(.*?)\]")
 EMAIL_REGEX = re.compile(r"[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}")
-INLINE_REFERENCE_REGEX = re.compile(r"(?<![\[\w])@(?P<key>[\w:-]+)(?![\w\s]*\])")
+INLINE_REFERENCE_REGEX = re.compile(r"(?<![\[\w])@(?P<key>[\w0-9_]([:.$&+?/-]?[\w0-9_]+)*)(?![\w\s]*\])")
 
 
 @dataclass
@@ -35,7 +64,7 @@ class Citation:
         pos_citations = [citation for citation in pos_citations if EMAIL_REGEX.match(citation) is None]
 
         for citation in pos_citations:
-            match = CITATION_REGEX.match(citation)
+            match = CITATION_REGEX.fullmatch(citation)
 
             if match:
                 result = {group: (match.group(group) or "") for group in ["prefix", "key", "suffix"]}

@@ -21,7 +21,7 @@ def plugin():
 
 
 def test_bibtex_loading_bibfile(plugin):
-    assert len(plugin.registry.bib_data.entries) == 4
+    assert len(plugin.registry.bib_data.entries) == 5
 
 
 def test_bibtex_loading_bib_url():

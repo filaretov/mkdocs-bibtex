@@ -7,7 +7,7 @@ name = "mkdocs-bibtex"
 dynamic = ["version"]
 description = "An MkDocs plugin that enables managing citations with BibTex"
 readme = "README.md"
-requires-python = ">=3.6"
+requires-python = ">=3.9"
 license = {text = "BSD-3-Clause-LBNL"}
 keywords = ["mkdocs", "python", "markdown", "bibtex"]
 authors = [
@@ -43,6 +43,17 @@ exclude = [
 ]
 
 [tool.setuptools_scm]
+
+[dependency-groups]
+dev = [
+    "mypy==1.15.0",
+    "pdbpp>=0.11.6",
+    "pytest==8.3.5",
+    "pytest-cov==6.1.1",
+    "pytest-pretty==1.2.0",
+    "ruff==0.11.8",
+    "types-requests~=2.32.0",
+]
 
 [tool.ruff.lint]
 ignore = [

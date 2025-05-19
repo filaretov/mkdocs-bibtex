@@ -93,6 +93,19 @@ def test_multiple_citation_blocks():
     assert str(blocks[1]) == "[@test2]"
 
 
+def test_punctuation_rich_citation():
+    """Test citation with lots of punctuation"""
+    citations = Citation.from_markdown("@__0:1.2:3$4&5-a+b?c/d")
+    assert len(citations) == 1
+    assert citations[0].key == "__0:1.2:3$4&5-a+b?c/d"
+
+
+def test_invalid_punctuation():
+    """Test citation with repeated punctuation is disallowed"""
+    citations = Citation.from_markdown("@some--nope")
+    assert len(citations) == 0
+
+
 def test_invalid_citation():
     """Test invalid citation formats"""
     citations = Citation.from_markdown("not a citation")
